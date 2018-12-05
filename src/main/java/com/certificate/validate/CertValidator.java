@@ -46,6 +46,19 @@ public class CertValidator {
 			e.printStackTrace();
 		} 
 	}
+	
+	public static boolean validateKeyChain(X509Certificate client, KeyStore keyStore)
+			throws KeyStoreException, CertificateException, InvalidAlgorithmParameterException,
+			NoSuchAlgorithmException, NoSuchProviderException {
+		X509Certificate[] certs = new X509Certificate[keyStore.size()];
+		int i = 0;
+		Enumeration<String> alias = keyStore.aliases();
+
+		while (alias.hasMoreElements()) {
+			certs[i++] = (X509Certificate) keyStore.getCertificate(alias.nextElement());
+		}
+		return validateKeyChain(client, certs);
+	}
 
 	public static boolean validateKeyChain(X509Certificate client, X509Certificate... trustedCerts)
 			throws CertificateException, InvalidAlgorithmParameterException, NoSuchAlgorithmException,
@@ -102,18 +115,5 @@ public class CertValidator {
 		} catch (InvalidKeyException keyEx) {
 			return false;
 		}
-	}
-
-	public static boolean validateKeyChain(X509Certificate client, KeyStore keyStore)
-			throws KeyStoreException, CertificateException, InvalidAlgorithmParameterException,
-			NoSuchAlgorithmException, NoSuchProviderException {
-		X509Certificate[] certs = new X509Certificate[keyStore.size()];
-		int i = 0;
-		Enumeration<String> alias = keyStore.aliases();
-
-		while (alias.hasMoreElements()) {
-			certs[i++] = (X509Certificate) keyStore.getCertificate(alias.nextElement());
-		}
-		return validateKeyChain(client, certs);
 	}
 }
